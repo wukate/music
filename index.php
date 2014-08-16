@@ -11,12 +11,26 @@
     <script src="js/main.js"></script>
   </head>
   <body>
-    <?php
-    require_once('config.php');
-    
+    <div class="container">
+      <table class="table table-striped" style="width:700px;">
+        <div class="control-group">
+          <div class="controls">
+            Name:<input type="text" id="name" name="name" placeholder="Enter Name...">
+            <button type="button" id="sub_btn" class="btn btn-primary btn-lg">Submit</button>
+          </div>
+        </div>
 
-    mysqli_close($con);
-    ?>
-
+        <thead>
+          <tr>
+            <th><i class="icon-user"></i>Name</th>
+            <th><i class="icon-user"></i>Sex</th>
+            <th><i class="icon-list"></i>Playlist</th>
+          </tr>
+        </thead>
+        <tbody id="list">
+          <tr><td colspan="3" style="text-align: center;">搜尋無結果</td></tr>
+        </tbody>
+      </table>
+    </div>
   </body>
 </html>

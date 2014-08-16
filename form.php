@@ -1,9 +1,30 @@
 <?php 
 require_once('config.php');
 
+// 取得所有分類
+$cate_sql = "SELECT * FROM categories";
+$categories = mysqli_query($con,$cate_sql);
+
 // 取得所有歌曲
-$sql = "SELECT * FROM songs";
-$res = mysqli_query($con,$sql);
+$song_sql = "SELECT * FROM songs";
+$res = mysqli_query($con,$song_sql);
+
+$songs = array();
+while($row = mysqli_fetch_object($res)) {
+  $tmp['id'] = $row->id;
+  $tmp['name'] = $row->name;
+
+  array_push($songs, $tmp);
+}
+
+// 取得所有歌手
+$singer_sql = "SELECT * FROM singers";
+$singers = mysqli_query($con,$singer_sql);
+
+// 取得所有會員
+$user_sql = "SELECT * FROM users";
+$users = mysqli_query($con,$user_sql);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -40,7 +61,7 @@ $res = mysqli_query($con,$sql);
           </div>
         </div>
         <div class="control-group">
-          <label class="control-label" for="inputEmail">Email</label>
+          <label class="control-label">Email</label>
           <div class="controls">
             <input type="text" id="email" name="email" placeholder="EnterEmail">
           </div>
@@ -70,6 +91,63 @@ $res = mysqli_query($con,$sql);
         <input type="hidden" name="insert_type" value="category">
       </form>
       <!-- insert category end -->
+      <!-- insert singer start -->
+      <h4>新增歌手</h4>
+      <form class="form-horizontal" action="create.php" method="post">
+        <div class="control-group">
+          <label class="control-label" for="inputName">Name</label>
+          <div class="controls">
+            <input type="text" id="name" name="name" placeholder="Enter Name...">
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="inputType">Type</label>
+          <div class="controls">
+            <label class="checkbox inline">
+              <input type="checkbox" name="singers[]" id="singers_1" value="男歌手"> 男歌手
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="singers[]" id="singers_2" value="女歌手"> 女歌手
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="singers[]" id="singers_3" value="男生團體"> 男生團體
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="singers[]" id="singers_4" value="女生團體"> 女生團體
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="singers[]" id="singers_5" value="樂團"> 樂團
+            </label>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label" for="inputType">Location</label>
+          <div class="controls">
+            <label class="checkbox inline">
+              <input type="checkbox" name="location[]" id="location_1" value="台灣"> 台灣
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="location[]" id="location_2" value="韓國"> 韓國
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="location[]" id="location_3" value="日本"> 日本
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="location[]" id="location_4" value="歐美"> 歐美
+            </label>
+            <label class="checkbox inline">
+              <input type="checkbox" name="location[]" id="location_5" value="其他"> 其他
+            </label>
+          </div>
+        </div>
+        <div class="control-group">
+          <div class="controls">
+            <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+          </div>
+        </div>
+        <input type="hidden" name="insert_type" value="singer">
+      </form>
+      <!-- insert singer end -->
       <!-- insert song start -->
       <h4>新增歌曲</h4>
       <form class="form-horizontal" action="create.php" method="post" enctype="multipart/form-data">
@@ -115,16 +193,67 @@ $res = mysqli_query($con,$sql);
           </div>
         </div>
         <div class="control-group">
-          <label class="control-label" for="inputEmail">歌曲</label>
+          <label class="control-label">分類</label>
           <div class="controls">
             <?php
-            if($res){
-              while($row = mysqli_fetch_object($res)) {
+            if($categories){
+              $count=1;
+              while($row = mysqli_fetch_object($categories)) {
+                $br_sign='';
+                if(($count%5)== 0 ){
+                  $br_sign='<br>';
+                }
+            ?>
+            <label class="radio inline">
+              <input type="radio" name="cate_id" id="cate_id" value="<?php echo $row->id;?>"> <?php echo $row->name?>
+            </label><?php echo $br_sign;?>
+            <? 
+              ++$count;
+              }
+            }
+            ?>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label">歌手</label>
+          <div class="controls">
+            <?php
+            if($singers){
+              $count=1;
+              while($row = mysqli_fetch_object($singers)) {
+                $br_sign='';
+                if(($count%5)== 0 ){
+                  $br_sign='<br>';
+                }
             ?>
             <label class="checkbox inline">
-              <input type="checkbox" name="song[]" id="song_<?php echo $row->id;?>" value="<?php echo $row->id;?>"> <?php echo $row->name;?>
-            </label>
+              <input type="checkbox" name="singer[]" id="singer_<?php echo $row->id;?>" value="<?php echo $row->id;?>"> <?php echo $row->name?>
+            </label><?php echo $br_sign;?>
             <? 
+              ++$count;
+              }
+            }
+            ?>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label">歌曲</label>
+          <div class="controls">
+            <?php
+
+            if($songs){
+              $count=1;
+              foreach ($songs as $key => $row) {
+                $br_sign='';
+                if(($count%5)== 0 ){
+                  $br_sign='<br>';
+                }
+            ?>
+            <label class="checkbox inline">
+              <input type="checkbox" name="song[]" id="song_<?php echo $row['id'];?>" value="<?php echo $row['id'];?>"> <?php echo $row['name']?>
+            </label><?php echo $br_sign;?>
+            <? 
+              ++$count;
               }
             }
             ?>
@@ -139,6 +268,70 @@ $res = mysqli_query($con,$sql);
         <input type="hidden" name="insert_type" value="album">
       </form>
       <!-- insert album end -->
+
+      <!-- insert playlist start -->
+      <h4>新增歌單</h4>
+      <form class="form-horizontal" action="create.php" method="post" enctype="multipart/form-data">
+        <div class="control-group">
+          <label class="control-label" for="inputName">Name</label>
+          <div class="controls">
+            <input type="text" id="name" name="name" placeholder="Enter Name...">
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label">會員</label>
+          <div class="controls">
+            <?php
+            if($users){
+              $count=1;
+              while($row = mysqli_fetch_object($users)) {
+                $br_sign='';
+                if(($count%5)== 0 ){
+                  $br_sign='<br>';
+                }
+            ?>
+            <label class="radio inline">
+              <input type="radio" name="u_id" id="u_id" value="<?php echo $row->id;?>"> <?php echo $row->name?>
+            </label><?php echo $br_sign;?>
+            <? 
+              ++$count;
+              }
+            }
+            ?>
+          </div>
+        </div>
+        <div class="control-group">
+          <label class="control-label">歌曲</label>
+          <div class="controls">
+            <?php
+
+            if($songs){
+              $count=1;
+              foreach ($songs as $key => $row) {
+                $br_sign='';
+                if(($count%5)== 0 ){
+                  $br_sign='<br>';
+                }
+            ?>
+            <label class="checkbox inline">
+              <input type="checkbox" name="song[]" id="song_<?php echo $row['id'];?>" value="<?php echo $row['id'];?>"> <?php echo $row['name']?>
+            </label><?php echo $br_sign;?>
+            <? 
+              ++$count;
+              }
+            }
+            ?>
+          </div>
+        </div>
+
+        <div class="control-group">
+          <div class="controls">
+            <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+          </div>
+        </div>
+        <input type="hidden" name="insert_type" value="playlist">
+      </form>
+      <!-- insert playlist end -->
     </div>
   </body>
 </html>
